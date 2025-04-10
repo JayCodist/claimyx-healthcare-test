@@ -103,42 +103,42 @@ export function ClaimsTable() {
         </Select>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border border-gray-200 dark:border-gray-700">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="dark:bg-gray-800/50">
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('patient_name')}
               >
                 Patient Name
               </TableHead>
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('billing_code')}
               >
                 Billing Code
               </TableHead>
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('amount')}
               >
                 Amount
               </TableHead>
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('insurance_provider')}
               >
                 Insurance Provider
               </TableHead>
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('payment_status')}
               >
                 Status
               </TableHead>
               <TableHead 
-                className="cursor-pointer"
+                className="cursor-pointer dark:text-gray-300"
                 onClick={() => handleSort('claim_date')}
               >
                 Claim Date
@@ -147,33 +147,33 @@ export function ClaimsTable() {
           </TableHeader>
           <TableBody>
             {data.records.map((record) => (
-              <TableRow key={record.patient_id}>
-                <TableCell>{record.patient_name}</TableCell>
-                <TableCell>{record.billing_code}</TableCell>
-                <TableCell>{currencyFormatter.format(record.amount)}</TableCell>
-                <TableCell>{record.insurance_provider}</TableCell>
+              <TableRow key={record.patient_id} className="bg-white dark:bg-gray-800 dark:hover:bg-gray-700/50">
+                <TableCell className="dark:text-gray-300">{record.patient_name}</TableCell>
+                <TableCell className="dark:text-gray-300">{record.billing_code}</TableCell>
+                <TableCell className="dark:text-gray-300">{currencyFormatter.format(record.amount)}</TableCell>
+                <TableCell className="dark:text-gray-300">{record.insurance_provider}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-block px-2 py-1 rounded-full text-sm ${
                       record.payment_status === 'Approved'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                         : record.payment_status === 'Denied'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}
                   >
                     {record.payment_status}
                   </span>
                 </TableCell>
-                <TableCell>{record.claim_date}</TableCell>
+                <TableCell className="dark:text-gray-300">{record.claim_date}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground whitespace-nowrap">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="text-sm text-muted-foreground dark:text-gray-400">
           Showing {data.records.length} of {data.totalRecords} records
         </div>
         <Pagination>

@@ -62,25 +62,25 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div className="p-4 bg-muted rounded-lg">
-              <div className="text-sm font-medium text-muted-foreground">Expected Revenue</div>
+              <div className="text-xs font-medium text-muted-foreground">Expected Revenue</div>
               <div className="text-xl font-bold">
                 ${results.expectedRevenue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>
             <div className="p-4 bg-muted rounded-lg">
-              <div className="text-sm font-medium text-muted-foreground">Minimum Revenue</div>
+              <div className="text-xs font-medium text-muted-foreground">Minimum Revenue</div>
               <div className="text-xl font-bold">
                 ${results.minRevenue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>
             <div className="p-4 bg-muted rounded-lg">
-              <div className="text-sm font-medium text-muted-foreground">Maximum Revenue</div>
+              <div className="text-xs font-medium text-muted-foreground">Maximum Revenue</div>
               <div className="text-xl font-bold">
                 ${results.maxRevenue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>
             <div className="p-4 bg-muted rounded-lg">
-              <div className="text-sm font-medium text-muted-foreground">95% Confidence Interval</div>
+              <div className="text-xs font-medium text-muted-foreground">95% Confidence Interval</div>
               <div className="text-lg font-bold">
                 ${results.confidenceInterval.lower.toLocaleString('en-US', { maximumFractionDigits: 0 })} - 
                 ${results.confidenceInterval.upper.toLocaleString('en-US', { maximumFractionDigits: 0 })}

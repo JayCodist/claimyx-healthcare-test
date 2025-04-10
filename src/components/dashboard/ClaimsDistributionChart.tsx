@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { currencyFormatter } from '@/lib/utils';
 
 const COLORS = ['#c5af00', '#15803d', '#dc2626'];
+const DARK_COLORS = ['#facc15', '#22c55e', '#ef4444'];
 
 interface ChartDataPoint {
   name: string;
@@ -37,9 +38,9 @@ export function ClaimsDistributionChart({ claimsByStatus, amountsByStatus }: Cla
   ];
 
   return (
-    <Card>
+    <Card className="dark:bg-gray-800 dark:border-gray-700">
       <CardHeader>
-        <CardTitle>Claims Distribution</CardTitle>
+        <CardTitle className="dark:text-white">Claims Distribution</CardTitle>
       </CardHeader>
       <CardContent className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -54,7 +55,10 @@ export function ClaimsDistributionChart({ claimsByStatus, amountsByStatus }: Cla
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? DARK_COLORS[index] : COLORS[index]} 
+                />
               ))}
             </Pie>
             <Tooltip 
@@ -67,8 +71,20 @@ export function ClaimsDistributionChart({ claimsByStatus, amountsByStatus }: Cla
                 }
                 return ['', ''];
               }}
+              contentStyle={{
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border)',
+                borderRadius: '0.5rem',
+              }}
+              labelStyle={{
+                color: 'var(--foreground)',
+              }}
             />
-            <Legend />
+            <Legend 
+              formatter={(value: string) => (
+                <span className="dark:text-gray-300">{value}</span>
+              )}
+            />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>
