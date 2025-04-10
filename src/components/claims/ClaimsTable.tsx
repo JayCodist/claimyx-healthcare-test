@@ -75,63 +75,75 @@ export function ClaimsTable() {
         </Select>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-white">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('patient_name')}
               >
                 Patient Name
-                {sort.key === 'patient_name' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'patient_name' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('billing_code')}
               >
                 Billing Code
-                {sort.key === 'billing_code' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'billing_code' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('amount')}
               >
                 Amount
-                {sort.key === 'amount' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'amount' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('insurance_provider')}
               >
                 Insurance Provider
-                {sort.key === 'insurance_provider' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'insurance_provider' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('payment_status')}
               >
                 Status
-                {sort.key === 'payment_status' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'payment_status' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => handleSort('claim_date')}
               >
                 Claim Date
-                {sort.key === 'claim_date' && (
-                  <span>{sort.direction === 'asc' ? ' ↑' : ' ↓'}</span>
-                )}
+                <span className="ml-1 text-muted-foreground inline-block">
+                  {sort.key === 'claim_date' ? (
+                    sort.direction === 'asc' ? '↑' : '↓'
+                  ) : '↕'}
+                </span>
               </TableHead>
             </TableRow>
           </TableHeader>

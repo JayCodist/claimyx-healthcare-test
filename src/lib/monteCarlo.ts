@@ -43,14 +43,14 @@ function calculateDistribution(results: number[], bins: number = 10): { range: s
   // Handle the case where all values are the same
   if (min === max) {
     return [{
-      range: `${min.toFixed(2)} - ${max.toFixed(2)}`,
+      range: formatCurrency(min),
       count: results.length
     }];
   }
 
   const binSize = (max - min) / bins;
   const distribution = Array(bins).fill(0).map((_, i) => ({
-    range: `${(min + i * binSize).toFixed(2)} - ${(min + (i + 1) * binSize).toFixed(2)}`,
+    range: `${formatCurrency(min + i * binSize)} - ${formatCurrency(min + (i + 1) * binSize)}`,
     count: 0
   }));
   
@@ -60,6 +60,10 @@ function calculateDistribution(results: number[], bins: number = 10): { range: s
   });
   
   return distribution;
+}
+
+function formatCurrency(value: number): string {
+  return `$${(value / 1000).toFixed(1)}k`;
 }
 
 export function runMonteCarloSimulation(
