@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { currencyFormatter } from '@/lib/utils';
 
 const COLORS = ['#c5af00', '#15803d', '#dc2626'];
 
@@ -60,7 +61,7 @@ export function ClaimsDistributionChart({ claimsByStatus, amountsByStatus }: Cla
               formatter={(value: number, name: string, item: { payload?: ChartDataPoint }) => {
                 if (item?.payload) {
                   return [
-                    `${value} claims ($${item.payload.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })})`,
+                    `${value} claims (${currencyFormatter.format(item.payload.amount)})`,
                     item.payload.name
                   ];
                 }

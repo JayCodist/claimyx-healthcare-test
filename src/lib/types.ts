@@ -10,12 +10,12 @@ export interface BillingRecord {
   claim_date: string;
 }
 
-export interface SortConfig {
-  key: keyof BillingRecord;
-  direction: 'asc' | 'desc';
-}
-
 export interface FilterConfig {
   search: string;
   status: PaymentStatus | 'all';
+}
+
+export interface SortConfig {
+  key: keyof BillingRecord;
+  direction: 'asc' | 'desc';
 } 

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { mockBillingRecords } from "@/lib/mockData";
 import { runMonteCarloSimulation } from "@/lib/monteCarlo";
 import { ProbabilityConfig } from "./ProbabilitySliders";
+import { useDebouncedEffect } from "@/lib/hooks/useDebouncedEffect";
 
 interface SimulationResult {
   expectedRevenue: number;
@@ -28,10 +29,14 @@ interface SimulationResultsProps {
 export function SimulationResults({ probabilities }: SimulationResultsProps) {
   const [results, setResults] = useState<SimulationResult | null>(null);
 
-  useEffect(() => {
-    const simulationResults = runMonteCarloSimulation(mockBillingRecords, probabilities);
-    setResults(simulationResults);
-  }, [probabilities]);
+  useDebouncedEffect(
+    () => {
+      const simulationResults = runMonteCarloSimulation(mockBillingRecords, probabilities);
+      setResults(simulationResults);
+    },
+    [probabilities],
+    50
+  );
 
   if (!results) {
     return (

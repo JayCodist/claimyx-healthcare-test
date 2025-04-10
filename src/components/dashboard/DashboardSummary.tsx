@@ -3,6 +3,7 @@
 import { mockBillingRecords } from '@/lib/mockData';
 import { Wallet, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { ClaimsDistributionChart } from './ClaimsDistributionChart';
+import { currencyFormatter } from '@/lib/utils';
 
 export function DashboardSummary() {
   const totalClaims = mockBillingRecords.length;
@@ -37,7 +38,7 @@ export function DashboardSummary() {
             <h3 className="text-sm font-medium text-gray-500">Total Billing Amount</h3>
             <Wallet className="h-5 w-5 text-gray-400" />
           </div>
-          <p className="text-3xl font-bold">${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-bold">{currencyFormatter.format(totalAmount)}</p>
           <p className="text-sm text-gray-500 mt-1">{totalClaims} total claims</p>
         </div>
         <div className="p-6 bg-white rounded-lg border">
@@ -45,7 +46,7 @@ export function DashboardSummary() {
             <h3 className="text-sm font-medium text-gray-500">Approved Amount</h3>
             <CheckCircle2 className="h-5 w-5 text-[#15803d]" />
           </div>
-          <p className="text-3xl font-bold text-[#15803d]">${approvedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-bold text-[#15803d]">{currencyFormatter.format(approvedAmount)}</p>
           <p className="text-sm text-gray-500 mt-1">{approvedClaims.length} approved claims</p>
         </div>
         <div className="p-6 bg-white rounded-lg border">
@@ -53,7 +54,7 @@ export function DashboardSummary() {
             <h3 className="text-sm font-medium text-gray-500">Pending Amount</h3>
             <Clock className="h-5 w-5 text-[#c5af00]" />
           </div>
-          <p className="text-3xl font-bold text-[#c5af00]">${pendingAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-bold text-[#c5af00]">{currencyFormatter.format(pendingAmount)}</p>
           <p className="text-sm text-gray-500 mt-1">{pendingClaims.length} pending claims</p>
         </div>
         <div className="p-6 bg-white rounded-lg border">
@@ -61,7 +62,7 @@ export function DashboardSummary() {
             <h3 className="text-sm font-medium text-gray-500">Denied Amount</h3>
             <XCircle className="h-5 w-5 text-[#dc2626]" />
           </div>
-          <p className="text-3xl font-bold text-[#dc2626]">${deniedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-bold text-[#dc2626]">{currencyFormatter.format(deniedAmount)}</p>
           <p className="text-sm text-gray-500 mt-1">{deniedClaims.length} denied claims</p>
         </div>
       </div>

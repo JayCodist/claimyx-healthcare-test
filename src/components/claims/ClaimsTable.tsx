@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -17,8 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { BillingRecord, FilterConfig, PaymentStatus, SortConfig } from '@/lib/types';
-import { filterAndSortRecords, mockBillingRecords } from '@/lib/mockData';
+import { getClaimsData } from '@/lib/actions/claims';
+import { currencyFormatter } from "@/lib/utils";
 
 const statusOptions: { value: PaymentStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'All Status' },
@@ -28,15 +37,32 @@ const statusOptions: { value: PaymentStatus | 'all'; label: string }[] = [
 ];
 
 export function ClaimsTable() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<FilterConfig>({
     search: '',
     status: 'all',
   });
-
   const [sort, setSort] = useState<SortConfig>({
     key: 'claim_date',
     direction: 'desc',
   });
+  const [data, setData] = useState<{
+    records: BillingRecord[];
+    totalPages: number;
+    totalRecords: number;
+  }>({
+    records: [],
+    totalPages: 0,
+    totalRecords: 0
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getClaimsData(filter, sort, currentPage, 5);
+      setData(result);
+    };
+    fetchData();
+  }, [filter, sort, currentPage]);
 
   const handleSort = (key: keyof BillingRecord) => {
     setSort(prev => ({
@@ -45,22 +71,24 @@ export function ClaimsTable() {
     }));
   };
 
-  const filteredRecords = filterAndSortRecords(mockBillingRecords, filter, sort);
-
   return (
     <div className="space-y-4">
       <div className="flex gap-4">
         <Input
           placeholder="Search claims..."
           value={filter.search}
-          onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value }))}
+          onChange={(e) => {
+            setFilter(prev => ({ ...prev, search: e.target.value }));
+            setCurrentPage(1); // Reset to first page on search
+          }}
           className="max-w-sm"
         />
         <Select
           value={filter.status}
-          onValueChange={(value: PaymentStatus | 'all') =>
-            setFilter(prev => ({ ...prev, status: value }))
-          }
+          onValueChange={(value: PaymentStatus | 'all') => {
+            setFilter(prev => ({ ...prev, status: value }));
+            setCurrentPage(1); // Reset to first page on filter change
+          }}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select status" />
@@ -79,80 +107,50 @@ export function ClaimsTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('patient_name')}
               >
                 Patient Name
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'patient_name' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('billing_code')}
               >
                 Billing Code
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'billing_code' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('amount')}
               >
                 Amount
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'amount' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('insurance_provider')}
               >
                 Insurance Provider
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'insurance_provider' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('payment_status')}
               >
                 Status
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'payment_status' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
-              <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              <TableHead 
+                className="cursor-pointer"
                 onClick={() => handleSort('claim_date')}
               >
                 Claim Date
-                <span className="ml-1 text-muted-foreground inline-block">
-                  {sort.key === 'claim_date' ? (
-                    sort.direction === 'asc' ? '↑' : '↓'
-                  ) : '↕'}
-                </span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRecords.map((record) => (
+            {data.records.map((record) => (
               <TableRow key={record.patient_id}>
                 <TableCell>{record.patient_name}</TableCell>
                 <TableCell>{record.billing_code}</TableCell>
-                <TableCell>${record.amount.toFixed(2)}</TableCell>
+                <TableCell>{currencyFormatter.format(record.amount)}</TableCell>
                 <TableCell>{record.insurance_provider}</TableCell>
                 <TableCell>
                   <span
@@ -172,6 +170,52 @@ export function ClaimsTable() {
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground whitespace-nowrap">
+          Showing {data.records.length} of {data.totalRecords} records
+        </div>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage(prev => Math.max(1, prev - 1));
+                }}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage(page);
+                  }}
+                  isActive={currentPage === page}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage(prev => Math.min(data.totalPages, prev + 1));
+                }}
+                aria-disabled={currentPage === data.totalPages}
+                className={currentPage === data.totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

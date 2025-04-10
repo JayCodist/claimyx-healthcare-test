@@ -1,5 +1,5 @@
 import { ClaimsTable } from "@/components/claims/ClaimsTable"
-import { DashboardSummary } from "@/components/dashboard/DashboardSummary"
+import { DashboardSummaryServer } from '@/components/server/dashboard/DashboardSummaryServer'
 import { MonteCarloSimulation } from "@/components/simulation/MonteCarloSimulation"
 
 export default function Home() {
@@ -8,15 +8,15 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-8">Healthcare Billing Dashboard</h1>
       <div className="space-y-8">
         <section>
-          <DashboardSummary />
-        </section>
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Revenue Forecasting</h2>
-          <MonteCarloSimulation />
+          <DashboardSummaryServer />
         </section>
         <section>
           <h2 className="text-2xl font-semibold mb-4">Claims Overview</h2>
           <ClaimsTable />
+        </section>
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">Revenue Forecasting</h2>
+          <MonteCarloSimulation />
         </section>
       </div>
     </main>

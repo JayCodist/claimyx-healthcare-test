@@ -1,58 +1,42 @@
 import { BillingRecord, FilterConfig, SortConfig } from './types';
 
-export const mockBillingRecords: BillingRecord[] = [
-  {
-    "patient_id": "P1",
-    "patient_name": "John Smith",
-    "billing_code": "B1001",
-    "amount": 1675.5,
-    "insurance_provider": "Blue Shield",
-    "payment_status": "Pending",
-    "claim_date": "2025-03-25"
-  },
-  {
-    "patient_id": "P2",
-    "patient_name": "Sarah Johnson",
-    "billing_code": "B2002",
-    "amount": 2310.09,
-    "insurance_provider": "Medicare",
-    "payment_status": "Approved",
-    "claim_date": "2025-01-05"
-  },
-  {
-    "patient_id": "P3",
-    "patient_name": "Robert Chen",
-    "billing_code": "B3003",
-    "amount": 4945.57,
-    "insurance_provider": "Aetna",
-    "payment_status": "Pending",
-    "claim_date": "2025-03-04"
-  },
-  {
-    "patient_id": "P4",
-    "patient_name": "Lisa Williams",
-    "billing_code": "B4004",
-    "amount": 8338.89,
-    "insurance_provider": "UnitedHealth",
-    "payment_status": "Denied",
-    "claim_date": "2025-03-20"
-  },
-  {
-    "patient_id": "P5",
-    "patient_name": "Michael Garcia",
-    "billing_code": "B5005",
-    "amount": 3220.05,
-    "insurance_provider": "Cigna",
-    "payment_status": "Denied",
-    "claim_date": "2025-02-21"
-  }
-];
+const firstNames = ['James', 'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'William', 'Sophia', 'Michael', 'Isabella', 'Alexander', 'Mia', 'Daniel', 'Charlotte'];
+const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson'];
+
+function generateRandomAmount(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function generateRandomDate(start: Date, end: Date): Date {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
+const paymentStatuses = ['Pending', 'Approved', 'Denied'] as const;
+const insuranceProviders = ['Blue Shield', 'Medicare', 'Aetna', 'UnitedHealth', 'Cigna'];
+
+export const mockBillingRecords: BillingRecord[] = Array.from({ length: 14 }, (_, index) => {
+  const startDate = new Date('2024-01-01');
+  const endDate = new Date('2024-03-15');
+  const claimDate = generateRandomDate(startDate, endDate);
+  
+  return {
+    patient_id: `P${(index + 1).toString().padStart(3, '0')}`,
+    patient_name: `${firstNames[index]} ${lastNames[index]}`,
+    billing_code: `B${(index + 1).toString().padStart(4, '0')}`,
+    amount: generateRandomAmount(1000, 15000),
+    claim_date: claimDate.toISOString().split('T')[0],
+    payment_status: paymentStatuses[index % paymentStatuses.length],
+    insurance_provider: insuranceProviders[index % insuranceProviders.length],
+  };
+});
 
 export const filterAndSortRecords = (
   records: BillingRecord[],
   filter: FilterConfig,
-  sort: SortConfig
-): BillingRecord[] => {
+  sort: SortConfig,
+  page: number = 1,
+  pageSize: number = 5
+): { records: BillingRecord[]; totalPages: number; totalRecords: number } => {
   let filteredRecords = [...records];
 
   // Apply status filter
@@ -92,5 +76,15 @@ export const filterAndSortRecords = (
     return 0;
   });
 
-  return filteredRecords;
+  // Calculate pagination
+  const totalRecords = filteredRecords.length;
+  const totalPages = Math.ceil(totalRecords / pageSize);
+  const startIndex = (page - 1) * pageSize;
+  const paginatedRecords = filteredRecords.slice(startIndex, startIndex + pageSize);
+
+  return {
+    records: paginatedRecords,
+    totalPages,
+    totalRecords
+  };
 }; 

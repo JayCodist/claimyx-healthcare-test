@@ -13,14 +13,25 @@ export interface ProbabilityConfig {
 interface ProbabilitySliderProps {
   probabilities: ProbabilityConfig;
   onChange: (newProbabilities: ProbabilityConfig) => void;
+  onChangeCommit?: (newProbabilities: ProbabilityConfig) => void;
 }
 
-export function ProbabilitySliders({ probabilities, onChange }: ProbabilitySliderProps) {
+export function ProbabilitySliders({ probabilities, onChange, onChangeCommit }: ProbabilitySliderProps) {
   const handleSliderChange = (value: number[], key: keyof ProbabilityConfig) => {
-    onChange({
+    const newProbabilities = {
       ...probabilities,
       [key]: value[0],
-    });
+    };
+    onChange(newProbabilities);
+  };
+
+  const handleSliderCommit = (value: number[], key: keyof ProbabilityConfig) => {
+    if (onChangeCommit) {
+      onChangeCommit({
+        ...probabilities,
+        [key]: value[0],
+      });
+    }
   };
 
   return (
@@ -41,6 +52,7 @@ export function ProbabilitySliders({ probabilities, onChange }: ProbabilitySlide
             step={1}
             value={[probabilities.pending]}
             onValueChange={(value) => handleSliderChange(value, "pending")}
+            onValueCommit={(value) => handleSliderCommit(value, "pending")}
             className="w-full"
           />
         </div>
@@ -57,6 +69,7 @@ export function ProbabilitySliders({ probabilities, onChange }: ProbabilitySlide
             step={1}
             value={[probabilities.approved]}
             onValueChange={(value) => handleSliderChange(value, "approved")}
+            onValueCommit={(value) => handleSliderCommit(value, "approved")}
             className="w-full"
           />
         </div>
@@ -73,6 +86,7 @@ export function ProbabilitySliders({ probabilities, onChange }: ProbabilitySlide
             step={1}
             value={[probabilities.denied]}
             onValueChange={(value) => handleSliderChange(value, "denied")}
+            onValueCommit={(value) => handleSliderCommit(value, "denied")}
             className="w-full"
           />
         </div>
