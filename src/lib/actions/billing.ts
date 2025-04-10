@@ -11,7 +11,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  */
 export async function getBillingRecords(): Promise<BillingRecord[]> {
   // Simulate network delay
-  await delay(1000);
+  await delay(500);
   return mockBillingRecords;
 }
 
