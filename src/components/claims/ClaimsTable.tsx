@@ -118,7 +118,7 @@ export function ClaimsTable() {
       <div className="rounded-md border border-gray-200 dark:border-gray-700">
         <Table>
           <TableHeader>
-            <TableRow className="dark:bg-gray-800/50">
+            <TableRow className="bg-[#f5f5f5] dark:bg-gray-800/50">
               <TableHead 
                 className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
                 onClick={() => handleSort('patient_name')}
