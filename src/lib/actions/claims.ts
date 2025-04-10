@@ -1,7 +1,7 @@
 'use server';
 
-import { mockBillingRecords } from "@/lib/mockData";
 import { FilterConfig, SortConfig } from "@/lib/types";
+import { getBillingRecords } from "./billing";
 
 export async function getClaimsData(
   filter: FilterConfig,
@@ -9,8 +9,9 @@ export async function getClaimsData(
   page: number = 1,
   pageSize: number = 5
 ) {
-  // In a real app, this would be a database query
-  let filteredRecords = [...mockBillingRecords];
+  // Get data from the central data fetching function
+  const records = await getBillingRecords();
+  let filteredRecords = [...records];
 
   // Apply status filter
   if (filter.status !== 'all') {

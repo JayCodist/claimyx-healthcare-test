@@ -10,6 +10,22 @@ export interface BillingRecord {
   claim_date: string;
 }
 
+export interface SimulationParameters {
+  pendingProbability: number;
+  approvedProbability: number;
+  deniedProbability: number;
+}
+
+export interface SimulationResult {
+  expectedRevenue: number;
+  minRevenue: number;
+  maxRevenue: number;
+  confidenceInterval: {
+    lower: number;
+    upper: number;
+  };
+}
+
 export interface FilterConfig {
   search: string;
   status: PaymentStatus | 'all';
