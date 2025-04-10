@@ -101,8 +101,26 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
                 />
                 <YAxis />
                 <Tooltip
+                  cursor={false}
                   formatter={(value: number) => [`${value} simulations`, 'Count']}
-                  labelFormatter={(label: string) => `Revenue Range: $${label}`}
+                  labelFormatter={(label: string) => `Revenue Range: ${label}`}
+                  contentStyle={{
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '0.5rem',
+                    color: '#3b82f6',
+                    padding: '8px 12px',
+                  }}
+                  itemStyle={{
+                    color: '#3b82f6',
+                  }}
+                  labelStyle={{
+                    color: '#3b82f6',
+                    marginBottom: '4px',
+                  }}
+                  wrapperStyle={{
+                    outline: 'none',
+                  }}
                 />
                 <Bar 
                   dataKey="count" 

@@ -75,9 +75,16 @@ export function ClaimsDistributionChart({ claimsByStatus, amountsByStatus }: Cla
                 backgroundColor: 'var(--background)',
                 border: '1px solid var(--border)',
                 borderRadius: '0.5rem',
+                color: 'var(--foreground)',
+              }}
+              itemStyle={{
+                color: 'var(--foreground)',
               }}
               labelStyle={{
                 color: 'var(--foreground)',
+              }}
+              wrapperStyle={{
+                outline: 'none',
               }}
             />
             <Legend 
