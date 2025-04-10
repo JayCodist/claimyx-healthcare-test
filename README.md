@@ -1,13 +1,36 @@
-# Healthcare Billing Dashboard
+# Healthcare Claims Dashboard
 
-A comprehensive healthcare billing dashboard with revenue forecasting capabilities using Monte Carlo simulation.
+A Next.js application for managing and visualizing healthcare claims data.
 
-## Features
+## Project Structure
 
-- **Dashboard Summary**
-  - Total billing amount and count of claims by status
-  - Visual representation of claim distribution
-  - Real-time updates
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── page.tsx           # Main page layout
+│   ├── layout.tsx         # Root layout
+│   └── globals.css        # Global styles
+├── components/            
+│   ├── claims/            # Claims management
+│   │   └── ClaimsTable.tsx   # Filterable claims table
+│   ├── dashboard/         # Dashboard components
+│   │   ├── DashboardSummaryServer.tsx  # Server component for data processing
+│   │   ├── DashboardSummaryClient.tsx  # Client component for UI rendering
+│   │   └── ClaimsDistributionChart.tsx # Claims distribution visualization
+│   ├── simulation/        # Monte Carlo simulation
+│   │   └── MonteCarloSimulation.tsx    # Revenue forecasting
+│   └── ui/               # Shared UI components (shadcn/ui)
+├── lib/                   
+│   ├── mockData.ts       # Mock data for development
+│   ├── monteCarlo.ts     # Simulation logic
+│   ├── types.ts          # TypeScript interfaces
+│   └── utils.ts          # Shared utilities
+└── tests/                # Test files
+```
+
+## Component Architecture
+
+### Features
 
 - **Claims Management**
   - Filterable and sortable claims table
@@ -18,7 +41,6 @@ A comprehensive healthcare billing dashboard with revenue forecasting capabiliti
 - **Revenue Forecasting**
   - Monte Carlo simulation for revenue prediction
   - Adjustable payment probabilities
-  - Real-time simulation updates
   - Statistical analysis with confidence intervals
   - Distribution visualization
 
@@ -29,35 +51,6 @@ A comprehensive healthcare billing dashboard with revenue forecasting capabiliti
 - Tailwind CSS
 - shadcn/ui component library
 - Recharts for data visualization
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js app router pages
-├── components/            
-│   ├── claims/            # Claims table components
-│   ├── dashboard/         # Dashboard summary components
-│   ├── simulation/        # Monte Carlo simulation components
-│   └── ui/                # shadcn/ui components
-├── lib/                   
-│   ├── monteCarlo.ts      # Simulation logic
-│   ├── types.ts           # TypeScript interfaces
-│   └── utils.ts           # Utility functions
-└── tests/                 # Test files
-```
-
-## Component Architecture
-
-### Claims Table
-- Uses server-side data fetching
-- Implements client-side filtering and sorting
-- Responsive design with mobile optimization
-
-### Monte Carlo Simulation
-- Client-side calculations with 2000 iterations
-- Uses Web Workers for performance
-- Real-time updates without UI blocking
 
 ## State Management
 
@@ -72,27 +65,6 @@ src/
 - Component rendering tests
 - User interaction tests
 - Monte Carlo simulation accuracy tests
-
-### Integration Tests
-- Component integration testing
-- Data flow validation
-- Error handling verification
-
-## Performance Considerations
-
-1. **Server Components**
-   - Used for static content
-   - Reduces client-side JavaScript
-
-2. **Monte Carlo Simulation**
-   - Optimized calculation engine
-   - Background processing
-   - Throttled updates
-
-3. **Data Management**
-   - Efficient filtering algorithms
-   - Memoized calculations
-   - Lazy loading where applicable
 
 ## Setup Instructions
 
@@ -115,23 +87,3 @@ src/
    ```bash
    npm test
    ```
-
-## Development Guidelines
-
-1. **Code Style**
-   - Follow TypeScript best practices
-   - Use functional components
-   - Implement proper error handling
-   - Add JSDoc comments for complex functions
-
-2. **Testing**
-   - Write tests for new features
-   - Maintain 70% code coverage
-   - Test edge cases
-   - Mock external dependencies
-
-3. **Performance**
-   - Monitor bundle size
-   - Optimize expensive calculations
-   - Use proper React hooks
-   - Implement proper memoization

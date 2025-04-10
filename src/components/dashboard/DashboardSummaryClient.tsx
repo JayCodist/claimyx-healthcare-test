@@ -1,7 +1,7 @@
 'use client';
 
 import { Wallet, CheckCircle2, Clock, XCircle } from 'lucide-react';
-import { ClaimsDistributionChart } from '../../dashboard/ClaimsDistributionChart';
+import { ClaimsDistributionChart } from './ClaimsDistributionChart';
 import { currencyFormatter } from '@/lib/utils';
 
 interface DashboardSummaryData {
