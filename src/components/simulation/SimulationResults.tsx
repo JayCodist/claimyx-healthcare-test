@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { mockBillingRecords } from "@/lib/mockData";
-import { runMonteCarloSimulation } from "@/lib/monteCarlo";
 import { ProbabilityConfig } from "./ProbabilitySliders";
 import { useDebouncedEffect } from "@/lib/hooks/useDebouncedEffect";
 
@@ -28,25 +27,63 @@ interface SimulationResultsProps {
 
 export function SimulationResults({ probabilities }: SimulationResultsProps) {
   const [results, setResults] = useState<SimulationResult | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL('../../../public/monte-carlo-worker.js', import.meta.url));
+    workerRef.current.onmessage = (event) => {
+      setResults(event.data);
+      setIsCalculating(false);
+    };
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   useDebouncedEffect(
     () => {
-      const simulationResults = runMonteCarloSimulation(mockBillingRecords, probabilities);
-      setResults(simulationResults);
+      if (workerRef.current) {
+        setIsCalculating(true);
+        workerRef.current.postMessage({
+          claims: mockBillingRecords,
+          probabilities
+        });
+      }
     },
     [probabilities],
     50
   );
 
-  if (!results) {
+  if (!results || isCalculating) {
     return (
-      <Card>
+      <Card className="h-[600px]">
         <CardHeader>
           <CardTitle>Simulation Results</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] flex items-center justify-center">
-            Loading simulation results...
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="p-4 bg-muted rounded-lg">
+              <div className="text-xs font-medium text-muted-foreground">Expected Revenue</div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+            <div className="p-4 bg-muted rounded-lg">
+              <div className="text-xs font-medium text-muted-foreground">Minimum Revenue</div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+            <div className="p-4 bg-muted rounded-lg">
+              <div className="text-xs font-medium text-muted-foreground">Maximum Revenue</div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+            <div className="p-4 bg-muted rounded-lg">
+              <div className="text-xs font-medium text-muted-foreground">95% Confidence Interval</div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+          </div>
+
+          <div className="h-[300px] mt-6">
+            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           </div>
         </CardContent>
       </Card>
@@ -55,7 +92,7 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="h-[600px]">
         <CardHeader>
           <CardTitle>Simulation Results</CardTitle>
         </CardHeader>
