@@ -42,7 +42,7 @@ export function ProbabilitySliders({ probabilities, onChange, onChangeCommit }: 
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="pending-probability">Pending Claims Payment Probability</Label>
+            <Label htmlFor="pending-probability">Pending Claims Probability</Label>
             <span className="text-sm text-muted-foreground">{probabilities.pending}%</span>
           </div>
           <Slider
@@ -59,7 +59,7 @@ export function ProbabilitySliders({ probabilities, onChange, onChangeCommit }: 
 
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="approved-probability">Approved Claims Payment Probability</Label>
+            <Label htmlFor="approved-probability">Approved Claims Probability</Label>
             <span className="text-sm text-muted-foreground">{probabilities.approved}%</span>
           </div>
           <Slider
@@ -76,7 +76,7 @@ export function ProbabilitySliders({ probabilities, onChange, onChangeCommit }: 
 
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="denied-probability">Denied Claims Appeal Success Probability</Label>
+            <Label htmlFor="denied-probability">Denied Claims Probability</Label>
             <span className="text-sm text-muted-foreground">{probabilities.denied}%</span>
           </div>
           <Slider

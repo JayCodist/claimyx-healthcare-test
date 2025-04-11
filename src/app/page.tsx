@@ -5,7 +5,7 @@ import { MonteCarloSimulation } from "@/components/simulation/MonteCarloSimulati
 export default function Home() {
   return (
     <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Healthcare Claims Dashboard</h1>
+      <h1 className="text-xl sm:text-3xl font-bold mb-6 sm:mb-8">Healthcare Claims Dashboard</h1>
       <div className="space-y-6 sm:space-y-8">
         <section>
           <DashboardSummaryServer />

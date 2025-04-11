@@ -63,7 +63,7 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div className="p-4 bg-muted rounded-lg">
               <div className="text-xs font-medium text-muted-foreground">Expected Revenue</div>
-              <div className="text-xl font-bold">
+              <div className="text-xl font-bold wrap-break-word">
                 ${results.expectedRevenue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>

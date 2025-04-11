@@ -1,22 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -25,27 +12,29 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { BillingRecord, FilterConfig, PaymentStatus, SortConfig } from '@/lib/types';
-import { getClaimsData } from '@/lib/actions/claims';
+import { BillingRecord, FilterConfig, PaymentStatus, SortConfig } from "@/lib/types";
+import { getClaimsData } from "@/lib/actions/claims";
 import { currencyFormatter } from "@/lib/utils";
-import { TableSkeleton } from './TableSkeleton';
+import { TableSkeleton } from "./TableSkeleton";
+import { useDebouncedEffect } from "@/lib/hooks/useDebouncedEffect";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
-const statusOptions: { value: PaymentStatus | 'all'; label: string }[] = [
-  { value: 'all', label: 'All Status' },
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Approved', label: 'Approved' },
-  { value: 'Denied', label: 'Denied' },
+const statusOptions: { value: PaymentStatus | "all"; label: string }[] = [
+  { value: "all", label: "All Status" },
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Denied", label: "Denied" },
 ];
 
 export function ClaimsTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<FilterConfig>({
-    search: '',
-    status: 'all',
+    search: "",
+    status: "all",
   });
   const [sort, setSort] = useState<SortConfig>({
-    key: 'claim_date',
-    direction: 'desc',
+    key: "claim_date",
+    direction: "desc",
   });
   const [data, setData] = useState<{
     records: BillingRecord[];
@@ -54,29 +43,52 @@ export function ClaimsTable() {
   }>({
     records: [],
     totalPages: 0,
-    totalRecords: 0
+    totalRecords: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result = await getClaimsData(filter, sort, currentPage, 5);
-        setData(result);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchData = useCallback(async (isSearch = false) => {
+    setIsLoading(true);
+    try {
+      const result = await getClaimsData({ filter, sort, page: currentPage, pageSize: 5 });
+      setData(result);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => {
+        if (searchInputRef.current && isSearch) {
+          searchInputRef.current.focus();
+        }
+      }, 50);
+    }
   }, [filter, sort, currentPage]);
+
+  useDebouncedEffect(
+    () => fetchData(true),
+    [filter.search],
+    500
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, [filter.status, fetchData, currentPage, sort]);
 
   const handleSort = (key: keyof BillingRecord) => {
     if (isLoading) return;
-    setSort(prev => ({
+    setSort((prev) => ({
       key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
+  };
+
+  const getSortIcon = (columnKey: keyof BillingRecord) => {
+    if (sort.key !== columnKey) return <ArrowUpDown className="h-4 w-4 opacity-50" />;
+    return sort.direction === "asc" ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
+      <ArrowDown className="h-4 w-4" />
+    );
   };
 
   return (
@@ -85,19 +97,19 @@ export function ClaimsTable() {
         <Input
           placeholder="Search claims..."
           value={filter.search}
-          onChange={(e) => {
-            if (isLoading) return;
-            setFilter(prev => ({ ...prev, search: e.target.value }));
-            setCurrentPage(1); // Reset to first page on search
-          }}
+          onChange={(e) => setFilter((prev) => {
+            setCurrentPage(1);
+            return { ...prev, search: e.target.value };
+          })}
           className="max-w-sm"
           disabled={isLoading}
+          ref={searchInputRef}
         />
         <Select
           value={filter.status}
-          onValueChange={(value: PaymentStatus | 'all') => {
+          onValueChange={(value: PaymentStatus | "all") => {
             if (isLoading) return;
-            setFilter(prev => ({ ...prev, status: value }));
+            setFilter((prev) => ({ ...prev, status: value }));
             setCurrentPage(1); // Reset to first page on filter change
           }}
           disabled={isLoading}
@@ -106,7 +118,7 @@ export function ClaimsTable() {
             <SelectValue placeholder="Select status" />
           </SelectTrigger>
           <SelectContent>
-            {statusOptions.map(option => (
+            {statusOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -119,41 +131,59 @@ export function ClaimsTable() {
         <Table>
           <TableHeader>
             <TableRow className="bg-[#f5f5f5] dark:bg-gray-800/50">
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('patient_name')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("patient_name")}
               >
-                Patient Name
+                <div className="flex items-center gap-1">
+                  Patient Name
+                  {getSortIcon("patient_name")}
+                </div>
               </TableHead>
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('billing_code')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("billing_code")}
               >
-                Billing Code
+                <div className="flex items-center gap-1">
+                  Billing Code
+                  {getSortIcon("billing_code")}
+                </div>
               </TableHead>
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('amount')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("amount")}
               >
-                Amount
+                <div className="flex items-center gap-1">
+                  Amount
+                  {getSortIcon("amount")}
+                </div>
               </TableHead>
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('insurance_provider')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("insurance_provider")}
               >
-                Insurance Provider
+                <div className="flex items-center gap-1">
+                  Insurance Provider
+                  {getSortIcon("insurance_provider")}
+                </div>
               </TableHead>
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('payment_status')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("payment_status")}
               >
-                Status
+                <div className="flex items-center gap-1">
+                  Status
+                  {getSortIcon("payment_status")}
+                </div>
               </TableHead>
-              <TableHead 
-                className={`cursor-pointer dark:text-gray-300 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={() => handleSort('claim_date')}
+              <TableHead
+                className={`cursor-pointer dark:text-gray-300 ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                onClick={() => handleSort("claim_date")}
               >
-                Claim Date
+                <div className="flex items-center gap-1">
+                  Claim Date
+                  {getSortIcon("claim_date")}
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -169,12 +199,12 @@ export function ClaimsTable() {
                   <TableCell className="dark:text-gray-300">{record.insurance_provider}</TableCell>
                   <TableCell>
                     <span
-                      className={`inline-block px-2 py-1 rounded-full text-sm ${
-                        record.payment_status === 'Approved'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                          : record.payment_status === 'Denied'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      className={`inline-block px-2 py-1 rounded text-sm ${
+                        record.payment_status === "Approved"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                          : record.payment_status === "Denied"
+                          ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
                       }`}
                     >
                       {record.payment_status}
@@ -189,7 +219,7 @@ export function ClaimsTable() {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="text-sm text-muted-foreground dark:text-gray-400">
+        <div className="text-sm text-muted-foreground dark:text-gray-400 whitespace-nowrap">
           {isLoading ? (
             <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           ) : (
@@ -204,10 +234,10 @@ export function ClaimsTable() {
                 onClick={(e) => {
                   e.preventDefault();
                   if (isLoading) return;
-                  setCurrentPage(prev => Math.max(1, prev - 1));
+                  setCurrentPage((prev) => Math.max(1, prev - 1));
                 }}
                 aria-disabled={currentPage === 1 || isLoading}
-                className={`${(currentPage === 1 || isLoading) ? 'pointer-events-none opacity-50' : ''}`}
+                className={`${currentPage === 1 || isLoading ? "pointer-events-none opacity-50" : ""}`}
               />
             </PaginationItem>
             {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((page) => (
@@ -220,7 +250,7 @@ export function ClaimsTable() {
                     setCurrentPage(page);
                   }}
                   isActive={currentPage === page}
-                  className={isLoading ? 'pointer-events-none opacity-50' : ''}
+                  className={isLoading ? "pointer-events-none opacity-50" : ""}
                 >
                   {page}
                 </PaginationLink>
@@ -232,10 +262,10 @@ export function ClaimsTable() {
                 onClick={(e) => {
                   e.preventDefault();
                   if (isLoading) return;
-                  setCurrentPage(prev => Math.min(data.totalPages, prev + 1));
+                  setCurrentPage((prev) => Math.min(data.totalPages, prev + 1));
                 }}
                 aria-disabled={currentPage === data.totalPages || isLoading}
-                className={`${(currentPage === data.totalPages || isLoading) ? 'pointer-events-none opacity-50' : ''}`}
+                className={`${currentPage === data.totalPages || isLoading ? "pointer-events-none opacity-50" : ""}`}
               />
             </PaginationItem>
           </PaginationContent>
@@ -243,4 +273,4 @@ export function ClaimsTable() {
       </div>
     </div>
   );
-} 
+}

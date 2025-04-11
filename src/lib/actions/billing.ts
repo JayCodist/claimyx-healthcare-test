@@ -3,15 +3,11 @@
 import { BillingRecord } from '../types';
 import { mockBillingRecords } from '../mockData';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 /**
  * Central function for fetching billing/claims data.
  * In a real app, this would fetch from an API or database.
  */
 export async function getBillingRecords(): Promise<BillingRecord[]> {
-  // Simulate network delay
-  await delay(500);
   return mockBillingRecords;
 }
 

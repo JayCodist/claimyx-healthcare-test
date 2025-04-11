@@ -3,12 +3,17 @@
 import { FilterConfig, SortConfig } from "@/lib/types";
 import { getBillingRecords } from "./billing";
 
-export async function getClaimsData(
-  filter: FilterConfig,
-  sort: SortConfig,
-  page: number = 1,
-  pageSize: number = 5
-) {
+export async function getClaimsData({
+  filter,
+  sort,
+  page,
+  pageSize,
+}: {
+  filter: FilterConfig;
+  sort: SortConfig;
+  page: number;
+  pageSize: number;
+}) {
   // Get data from the central data fetching function
   const records = await getBillingRecords();
   let filteredRecords = [...records];
