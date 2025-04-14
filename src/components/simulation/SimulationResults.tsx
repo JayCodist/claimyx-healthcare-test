@@ -63,7 +63,7 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="h-[600px]">
+      <Card className="min-h-[600px] sm:h-[600px]">
         <CardHeader>
           <CardTitle>Simulation Results</CardTitle>
         </CardHeader>
