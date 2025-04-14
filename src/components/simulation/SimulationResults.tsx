@@ -25,16 +25,22 @@ interface SimulationResultsProps {
   probabilities: ProbabilityConfig;
 }
 
+const blankSimulationResult: SimulationResult = {
+  expectedRevenue: 0,
+  minRevenue: 0,
+  maxRevenue: 0,
+  confidenceInterval: { lower: 0, upper: 0 },
+  distribution: []
+};
+
 export function SimulationResults({ probabilities }: SimulationResultsProps) {
-  const [results, setResults] = useState<SimulationResult | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [results, setResults] = useState<SimulationResult>(blankSimulationResult);
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
     workerRef.current = new Worker(new URL('../../../public/monte-carlo-worker.js', import.meta.url));
     workerRef.current.onmessage = (event) => {
-      setResults(event.data);
-      setIsCalculating(false);
+      setResults(event.data || blankSimulationResult);
     };
 
     return () => {
@@ -45,7 +51,6 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
   useDebouncedEffect(
     () => {
       if (workerRef.current) {
-        setIsCalculating(true);
         workerRef.current.postMessage({
           claims: mockBillingRecords,
           probabilities
@@ -55,40 +60,6 @@ export function SimulationResults({ probabilities }: SimulationResultsProps) {
     [probabilities],
     50
   );
-
-  if (!results || isCalculating) {
-    return (
-      <Card className="h-[600px]">
-        <CardHeader>
-          <CardTitle>Simulation Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="p-4 bg-muted rounded-lg">
-              <div className="text-xs font-medium text-muted-foreground">Expected Revenue</div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <div className="text-xs font-medium text-muted-foreground">Minimum Revenue</div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <div className="text-xs font-medium text-muted-foreground">Maximum Revenue</div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <div className="text-xs font-medium text-muted-foreground">95% Confidence Interval</div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-          </div>
-
-          <div className="h-[300px] mt-6">
-            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className="space-y-6">

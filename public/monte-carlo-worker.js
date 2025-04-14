@@ -8,8 +8,8 @@ self.addEventListener('message', (event) => {
   for (let i = 0; i < NUM_SIMULATIONS; i++) {
     let total = 0;
     for (const claim of claims) {
-      const probability = probabilities[claim.payment_status.toLowerCase()];
-      const willPay = Math.random() * 100 <= probability;
+      const probability = probabilities[claim.payment_status.toLowerCase()] || 0;
+      const willPay = Math.random() <= (probability / 100);
       total += willPay ? claim.amount : 0;
     }
     results.push(total);
@@ -33,6 +33,24 @@ self.addEventListener('message', (event) => {
   const min = Math.min(...results);
   const max = Math.max(...results);
   const bins = 10;
+  
+  // Handle the case where all values are the same (including all zeros)
+  if (min === max) {
+    const distribution = [{
+      range: `$${(min / 1000).toFixed(1)}k`,
+      count: results.length
+    }];
+    
+    self.postMessage({
+      expectedRevenue,
+      minRevenue,
+      maxRevenue,
+      confidenceInterval,
+      distribution
+    });
+    return;
+  }
+  
   const binSize = (max - min) / bins;
   const distribution = Array(bins).fill(0).map((_, i) => ({
     range: `${formatCurrency(min + i * binSize)} - ${formatCurrency(min + (i + 1) * binSize)}`,

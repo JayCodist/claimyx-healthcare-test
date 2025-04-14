@@ -56,11 +56,11 @@ export function ClaimsTable() {
       setData(result);
     } finally {
       setIsLoading(false);
-      setTimeout(() => {
-        if (searchInputRef.current && isSearch) {
-          searchInputRef.current.focus();
-        }
-      }, 50);
+      if (isSearch) {
+        setTimeout(() => {
+          searchInputRef.current?.focus();
+        }, 50);
+      }
     }
   }, [filter, sort, currentPage]);
 
@@ -72,7 +72,8 @@ export function ClaimsTable() {
 
   useEffect(() => {
     fetchData();
-  }, [filter.status, fetchData, currentPage, sort]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter.status, currentPage, sort]);
 
   const handleSort = (key: keyof BillingRecord) => {
     if (isLoading) return;
