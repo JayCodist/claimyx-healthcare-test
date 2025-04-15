@@ -70,6 +70,13 @@ export function runMonteCarloSimulation(
   claims: BillingRecord[],
   probabilities: ProbabilityConfig
 ): SimulationResult {
+  // Validate probabilities are between 0 and 100
+  if (probabilities.pending < 0 || probabilities.pending > 100 ||
+      probabilities.approved < 0 || probabilities.approved > 100 ||
+      probabilities.denied < 0 || probabilities.denied > 100) {
+    throw new Error("Probabilities must be between 0 and 100");
+  }
+
   const results: number[] = [];
   
   // Run simulations
